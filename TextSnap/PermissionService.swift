@@ -2,12 +2,17 @@ import CoreGraphics
 import AppKit
 
 struct PermissionService {
-    // CGRequestScreenCaptureAccess registers this app in TCC and triggers the
-    // system permission dialog on first call. Returns true immediately if the
-    // app already has permission; returns false and shows the dialog otherwise.
-    // Unlike CGPreflightScreenCaptureAccess, this actually makes the app appear
-    // in System Settings → Privacy & Security → Screen Recording.
+    // Fast non-prompting check against TCC. Returns true if Screen Recording
+    // is already granted for the currently running binary's code identity.
     static func checkScreenRecordingPermission() -> Bool {
+        CGPreflightScreenCaptureAccess()
+    }
+
+    // Triggers the macOS system permission dialog when permission is not yet
+    // determined. If permission is already granted or denied, this is a no-op.
+    // Call only when the user explicitly requests a capture, not at app launch.
+    @discardableResult
+    static func requestScreenRecordingPermission() -> Bool {
         CGRequestScreenCaptureAccess()
     }
 

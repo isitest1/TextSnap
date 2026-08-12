@@ -15,52 +15,62 @@ final class CaptureCoordinator {
 
     func startCapture() {
         guard state == .idle else { return }
-        guard PermissionService.checkScreenRecordingPermission() else {
+
+        if PermissionService.checkScreenRecordingPermission() {
+            state = .selecting
+            overlayController.show()
+        } else {
+            // Request triggers the system dialog if permission is not yet determined.
+            // This dialog is separate from our alert below — the user must respond
+            // to the system dialog first, then use "Quit & Relaunch" or the native
+            // "Quit & Reopen" button macOS shows in System Settings.
+            PermissionService.requestScreenRecordingPermission()
             showPermissionAlert()
-            return
         }
-        state = .selecting
-        overlayController.show()
     }
 
     private func showPermissionAlert() {
         let alert = NSAlert()
         alert.messageText = "Screen Recording Permission Required"
-        alert.informativeText = "TextSnap needs Screen Recording access.\n\nIf the system dialog appeared, click Allow there.\nIf not, open System Settings → Privacy & Security → Screen Recording and enable TextSnap.\n\nThen click \"Quit & Relaunch\" to apply the change."
-        alert.addButton(withTitle: "Quit & Relaunch")
+        alert.informativeText = """
+            TextSnap needs Screen Recording access to capture text.
+
+            1. If a system dialog appeared, click "Open System Settings" in it.
+            2. In System Settings → Privacy & Security → Screen Recording, \
+            enable TextSnap.
+            3. macOS will show a "Quit & Reopen" button — click it, \
+            or use "Quit & Relaunch" below.
+            """
         alert.addButton(withTitle: "Open System Settings")
+        alert.addButton(withTitle: "Quit & Relaunch")
         alert.addButton(withTitle: "Cancel")
         switch alert.runModal() {
         case .alertFirstButtonReturn:
-            relaunchApp()
-        case .alertSecondButtonReturn:
             PermissionService.openSystemSettings()
+        case .alertSecondButtonReturn:
+            relaunchApp()
         default:
             break
         }
     }
 
+    private func relaunchApp() {
+        let bundleURL = Bundle.main.bundleURL
+        let config = NSWorkspace.OpenConfiguration()
+        config.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: bundleURL, configuration: config) { _, _ in }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NSApp.terminate(nil)
+        }
+    }
+
     private func isScreenCapturePermissionError(_ error: Error) -> Bool {
-        // SCStreamError domain error codes for permission issues.
-        // Code -3801 (userDeclined) and -100 appear when ScreenCaptureKit
-        // cannot access screen content due to missing permission.
         let nsError = error as NSError
         let scDomain = "com.apple.ScreenCaptureKit.SCStreamErrorDomain"
         if nsError.domain == scDomain {
             return nsError.code == -3801 || nsError.code == -100
         }
         return false
-    }
-
-    private func relaunchApp() {
-        let path = Bundle.main.bundlePath
-        let task = Process()
-        task.launchPath = "/usr/bin/open"
-        task.arguments = [path]
-        try? task.run()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            NSApp.terminate(nil)
-        }
     }
 
     private func showErrorAlert(_ error: Error) {
@@ -109,9 +119,6 @@ extension CaptureCoordinator: SelectionDelegate {
                     playSuccessSound()
                 }
             } catch {
-                // ScreenCaptureKit returns an error when permission was granted
-                // in TCC but the app has not yet been restarted. Reuse the
-                // permission alert so the user can quit and relaunch.
                 if isScreenCapturePermissionError(error) {
                     showPermissionAlert()
                 } else {
