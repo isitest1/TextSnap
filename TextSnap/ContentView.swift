@@ -1,24 +1,3 @@
-//
-//  ContentView.swift
-//  TextSnap
-//
-//  Created by toto on 2026/08/12.
-//
-
-import SwiftUI
-
-struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
-
-#Preview {
-    ContentView()
-}
+// ContentView.swift is intentionally unused.
+// TextSnap is a menu bar app with no main window.
+// All UI is managed by StatusBarController and SelectionOverlayController.

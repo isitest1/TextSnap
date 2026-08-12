@@ -1,0 +1,41 @@
+name: Feature Request
+description: Suggest an idea for TextSnap
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting, please check that the feature is not already listed as "Out of scope" in the project's CLAUDE.md.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this feature solve?
+      placeholder: When I try to capture text from..., I can't...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you've thought about?
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: This feature aligns with TextSnap's core purpose (select a region → OCR → clipboard)
+          required: false
+        - label: This feature does not require external services or internet access
+          required: false

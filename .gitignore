@@ -1,0 +1,16 @@
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.p12
+*.cer
+*.mobileprovision
+*.provisionprofile
+.env
+.env.*

@@ -1,17 +1,13 @@
-//
-//  TextSnapApp.swift
-//  TextSnap
-//
-//  Created by toto on 2026/08/12.
-//
-
 import SwiftUI
 
 @main
 struct TextSnapApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra("TextSnap", systemImage: "text.viewfinder") {
+            AppMenuContent(coordinator: appDelegate.coordinator)
         }
+        .menuBarExtraStyle(.menu)
     }
 }
