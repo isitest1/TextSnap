@@ -7,7 +7,6 @@
   <meta name="description" content="A lightweight macOS menu bar app that captures text from any area of your screen using local OCR. No internet required.">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --bg: #f5f5f7;
       --surface: #ffffff;
@@ -17,7 +16,7 @@
       --accent-hover: #0077ed;
       --border: #d2d2d7;
       --radius: 18px;
-      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Hiragino Sans", "Yu Gothic UI", "Segoe UI", sans-serif;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -30,139 +29,99 @@
         --border: #3a3a3c;
       }
     }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
+    /* Language switcher */
+    .lang-bar {
+      position: fixed;
+      top: 0; right: 0; left: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 24px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
     }
+    .lang-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.9);
+      border-radius: 980px;
+      padding: 5px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background 0.2s;
+    }
+    .lang-btn:hover { background: rgba(255,255,255,0.25); }
 
     /* Hero */
     .hero {
       text-align: center;
-      padding: 100px 24px 80px;
+      padding: 140px 24px 80px;
       background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       color: #f5f5f7;
     }
     .hero-icon {
-      width: 120px;
-      height: 120px;
+      width: 120px; height: 120px;
       background: linear-gradient(135deg, #429cfe 0%, #0a38c2 100%);
       border-radius: 27px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
       margin-bottom: 32px;
-      box-shadow: 0 20px 60px rgba(0, 113, 227, 0.5);
+      box-shadow: 0 20px 60px rgba(0,113,227,0.5);
     }
-    .hero-icon svg { width: 64px; height: 64px; fill: white; }
+    .hero-icon svg { width: 64px; height: 64px; }
     .hero h1 { font-size: clamp(40px, 6vw, 64px); font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; }
-    .hero p { font-size: clamp(17px, 2.5vw, 21px); color: rgba(245,245,247,0.7); max-width: 560px; margin: 0 auto 40px; }
-
+    .hero p { font-size: clamp(16px, 2.5vw, 20px); color: rgba(245,245,247,0.75); max-width: 560px; margin: 0 auto 40px; }
     .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent);
-      color: white;
-      padding: 16px 36px;
-      border-radius: 980px;
-      font-size: 17px;
-      font-weight: 600;
-      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: white;
+      padding: 16px 36px; border-radius: 980px;
+      font-size: 17px; font-weight: 600; text-decoration: none;
       transition: background 0.2s, transform 0.15s;
     }
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
     .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: 16px;
-      color: rgba(245,245,247,0.8);
-      font-size: 15px;
-      text-decoration: none;
-      transition: color 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-left: 16px; color: rgba(245,245,247,0.8);
+      font-size: 15px; text-decoration: none; transition: color 0.2s;
     }
     .btn-secondary:hover { color: white; }
     .meta { margin-top: 20px; font-size: 13px; color: rgba(245,245,247,0.45); }
 
     /* Steps */
     .steps { padding: 80px 24px; text-align: center; background: var(--bg); }
-    .section-label { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-    .section-title { font-size: clamp(28px, 4vw, 44px); font-weight: 700; margin-bottom: 16px; letter-spacing: -0.3px; }
+    .section-label { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-size: clamp(26px, 4vw, 42px); font-weight: 700; margin-bottom: 16px; letter-spacing: -0.3px; }
     .section-sub { font-size: 17px; color: var(--text-secondary); max-width: 520px; margin: 0 auto 56px; }
-
-    .steps-grid {
-      display: flex;
-      justify-content: center;
-      gap: 0;
-      max-width: 860px;
-      margin: 0 auto;
-      flex-wrap: wrap;
-    }
-    .step {
-      flex: 1 1 180px;
-      padding: 32px 24px;
-      position: relative;
-    }
+    .steps-grid { display: flex; justify-content: center; gap: 0; max-width: 860px; margin: 0 auto; flex-wrap: wrap; }
+    .step { flex: 1 1 180px; padding: 32px 24px; }
     .step-num {
-      width: 44px; height: 44px;
-      background: var(--accent);
-      color: white;
-      border-radius: 50%;
-      font-size: 18px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
+      width: 44px; height: 44px; background: var(--accent); color: white; border-radius: 50%;
+      font-size: 18px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;
     }
     .step h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
     .step p { font-size: 15px; color: var(--text-secondary); }
     .step kbd {
-      display: inline-block;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 13px;
-      font-family: var(--font);
-      font-weight: 600;
+      display: inline-block; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2px 8px; font-size: 13px; font-family: var(--font); font-weight: 600;
     }
 
     /* Features */
     .features { padding: 80px 24px; background: var(--surface); }
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      max-width: 1020px;
-      margin: 0 auto;
-    }
-    .feature-card {
-      background: var(--bg);
-      border-radius: var(--radius);
-      padding: 32px;
-    }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 1020px; margin: 0 auto; }
+    .feature-card { background: var(--bg); border-radius: var(--radius); padding: 32px; }
     .feature-icon { font-size: 32px; margin-bottom: 16px; }
     .feature-card h3 { font-size: 19px; font-weight: 600; margin-bottom: 8px; }
     .feature-card p { font-size: 15px; color: var(--text-secondary); }
 
     /* Privacy */
-    .privacy {
-      padding: 80px 24px;
-      background: var(--bg);
-      text-align: center;
-    }
+    .privacy { padding: 80px 24px; background: var(--bg); text-align: center; }
     .privacy-box {
-      max-width: 660px;
-      margin: 0 auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 48px 40px;
+      max-width: 660px; margin: 0 auto;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 48px 40px;
     }
     .privacy-box h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
     .privacy-box p { font-size: 17px; color: var(--text-secondary); margin-bottom: 16px; }
@@ -172,13 +131,7 @@
     .check { color: #30d158; font-size: 18px; flex-shrink: 0; }
 
     /* Footer */
-    footer {
-      padding: 48px 24px;
-      text-align: center;
-      border-top: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
+    footer { padding: 48px 24px; text-align: center; border-top: 1px solid var(--border); font-size: 14px; color: var(--text-secondary); }
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
     footer .links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -186,55 +139,53 @@
 </head>
 <body>
 
+<!-- Language Bar -->
+<div class="lang-bar">
+  <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">日本語</button>
+</div>
+
 <!-- Hero -->
 <section class="hero">
   <div class="hero-icon">
-    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <!-- Viewfinder corners -->
-      <path d="M10,30 L10,10 L30,10" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M70,10 L90,10 L90,30" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M90,70 L90,90 L70,90" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M30,90 L10,90 L10,70" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <!-- Text lines -->
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <path d="M10,30 L10,10 L30,10" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M70,10 L90,10 L90,30" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M90,70 L90,90 L70,90" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M30,90 L10,90 L10,70" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
       <rect x="28" y="38" width="44" height="7" rx="3.5" fill="white" opacity="0.9"/>
       <rect x="28" y="52" width="44" height="7" rx="3.5" fill="white"/>
       <rect x="28" y="66" width="28" height="7" rx="3.5" fill="white" opacity="0.6"/>
     </svg>
   </div>
   <h1>TextSnap</h1>
-  <p>Capture text from anywhere on your screen with one shortcut. Recognized locally. No internet required.</p>
+  <p id="hero-sub"></p>
   <div>
-    <a href="https://github.com/isitest1/TextSnap/releases/latest" class="btn-primary">
-      ⬇ Download for Mac
-    </a>
-    <a href="https://github.com/isitest1/TextSnap" class="btn-secondary">
-      View on GitHub →
-    </a>
+    <a href="https://github.com/isitest1/TextSnap/releases/latest" class="btn-primary" id="btn-download"></a>
+    <a href="https://github.com/isitest1/TextSnap" class="btn-secondary" id="btn-github"></a>
   </div>
-  <p class="meta">Free · Open Source · macOS 14.0+ · Apple Silicon &amp; Intel</p>
+  <p class="meta" id="hero-meta"></p>
 </section>
 
-<!-- How it works -->
+<!-- Steps -->
 <section class="steps">
-  <p class="section-label">How it works</p>
-  <h2 class="section-title">Three steps to any text</h2>
-  <p class="section-sub">No setup, no configuration. Just press the shortcut and select.</p>
-
+  <p class="section-label" id="steps-label"></p>
+  <h2 class="section-title" id="steps-title"></h2>
+  <p class="section-sub" id="steps-sub"></p>
   <div class="steps-grid">
     <div class="step">
       <div class="step-num">1</div>
-      <h3>Press the shortcut</h3>
-      <p>Hit <kbd>⌘⇧2</kbd> from any app to activate capture mode.</p>
+      <h3 id="step1-title"></h3>
+      <p id="step1-body"></p>
     </div>
     <div class="step">
       <div class="step-num">2</div>
-      <h3>Select a region</h3>
-      <p>Draw a rectangle over any text visible on screen.</p>
+      <h3 id="step2-title"></h3>
+      <p id="step2-body"></p>
     </div>
     <div class="step">
       <div class="step-num">3</div>
-      <h3>Paste anywhere</h3>
-      <p>Text is recognized and copied. Press <kbd>⌘V</kbd> to paste.</p>
+      <h3 id="step3-title"></h3>
+      <p id="step3-body"></p>
     </div>
   </div>
 </section>
@@ -242,39 +193,39 @@
 <!-- Features -->
 <section class="features">
   <div style="text-align:center; margin-bottom: 56px;">
-    <p class="section-label">Features</p>
-    <h2 class="section-title">Everything you need, nothing you don't</h2>
+    <p class="section-label" id="feat-label"></p>
+    <h2 class="section-title" id="feat-title"></h2>
   </div>
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">🔍</div>
-      <h3>Local OCR</h3>
-      <p>Uses Apple Vision framework. Your screenshots never leave your Mac.</p>
+      <h3 id="f1-title"></h3>
+      <p id="f1-body"></p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🇯🇵 🇺🇸</div>
-      <h3>Japanese &amp; English</h3>
-      <p>Recognizes both languages individually or mixed in the same image.</p>
+      <div class="feature-icon">🇯🇵&thinsp;🇺🇸</div>
+      <h3 id="f2-title"></h3>
+      <p id="f2-body"></p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🖥</div>
-      <h3>Multi-display</h3>
-      <p>Supports multiple monitors with different Retina scale factors.</p>
+      <h3 id="f3-title"></h3>
+      <p id="f3-body"></p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⚡</div>
-      <h3>Instant capture</h3>
-      <p>No streaming, no delay. A single screenshot is taken and discarded after recognition.</p>
+      <h3 id="f4-title"></h3>
+      <p id="f4-body"></p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📋</div>
-      <h3>Plain text output</h3>
-      <p>Result is always plain text — paste cleanly into any app.</p>
+      <h3 id="f5-title"></h3>
+      <p id="f5-body"></p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔇</div>
-      <h3>Menu bar only</h3>
-      <p>No Dock icon, no windows, no clutter. Runs quietly in the background.</p>
+      <h3 id="f6-title"></h3>
+      <p id="f6-body"></p>
     </div>
   </div>
 </section>
@@ -282,14 +233,14 @@
 <!-- Privacy -->
 <section class="privacy">
   <div class="privacy-box">
-    <h2>🔒 Privacy first</h2>
-    <p>TextSnap processes screenshots and recognized text locally on your Mac. It does not upload, store, or transmit captured images or OCR results.</p>
+    <h2>🔒 <span id="priv-title"></span></h2>
+    <p id="priv-body"></p>
     <ul class="privacy-items">
-      <li><span class="check">✓</span> No network requests — ever</li>
-      <li><span class="check">✓</span> No account or sign-in required</li>
-      <li><span class="check">✓</span> Screenshots are never written to disk</li>
-      <li><span class="check">✓</span> No analytics or telemetry</li>
-      <li><span class="check">✓</span> 100% open source — audit the code</li>
+      <li><span class="check">✓</span> <span id="priv1"></span></li>
+      <li><span class="check">✓</span> <span id="priv2"></span></li>
+      <li><span class="check">✓</span> <span id="priv3"></span></li>
+      <li><span class="check">✓</span> <span id="priv4"></span></li>
+      <li><span class="check">✓</span> <span id="priv5"></span></li>
     </ul>
   </div>
 </section>
@@ -297,13 +248,168 @@
 <!-- Footer -->
 <footer>
   <div class="links">
-    <a href="https://github.com/isitest1/TextSnap">GitHub</a>
-    <a href="https://github.com/isitest1/TextSnap/releases">Releases</a>
-    <a href="https://github.com/isitest1/TextSnap/issues">Issues</a>
-    <a href="https://github.com/isitest1/TextSnap/blob/main/LICENSE">License</a>
+    <a href="https://github.com/isitest1/TextSnap" id="foot-github"></a>
+    <a href="https://github.com/isitest1/TextSnap/releases" id="foot-releases"></a>
+    <a href="https://github.com/isitest1/TextSnap/issues" id="foot-issues"></a>
+    <a href="https://github.com/isitest1/TextSnap/blob/main/LICENSE" id="foot-license"></a>
   </div>
-  <p>© 2026 Kohei Ishikawa · MIT License · Made for macOS</p>
+  <p id="foot-copy"></p>
 </footer>
 
+<script>
+const T = {
+  en: {
+    langToggle: "日本語",
+    heroSub: "Capture text from anywhere on your screen with one shortcut. Recognized locally. No internet required.",
+    btnDownload: "⬇ Download for Mac",
+    btnGithub: "View on GitHub →",
+    heroMeta: "Free · Open Source · macOS 14.0+ · Apple Silicon & Intel",
+    stepsLabel: "How it works",
+    stepsTitle: "Three steps to any text",
+    stepsSub: "No setup required. Just press the shortcut and select.",
+    step1Title: "Press the shortcut",
+    step1Body: "Hit <kbd>⌘⇧2</kbd> from any app to activate capture mode.",
+    step2Title: "Select a region",
+    step2Body: "Draw a rectangle over any text visible on screen.",
+    step3Title: "Paste anywhere",
+    step3Body: "Text is recognized and copied. Press <kbd>⌘V</kbd> to paste.",
+    featLabel: "Features",
+    featTitle: "Everything you need, nothing you don't",
+    f1Title: "Local OCR",
+    f1Body: "Uses Apple Vision framework. Your screenshots never leave your Mac.",
+    f2Title: "Japanese & English",
+    f2Body: "Recognizes both languages individually or mixed in the same image.",
+    f3Title: "Multi-display",
+    f3Body: "Supports multiple monitors with different Retina scale factors.",
+    f4Title: "Instant capture",
+    f4Body: "No streaming, no delay. A single screenshot is taken and discarded after recognition.",
+    f5Title: "Plain text output",
+    f5Body: "Result is always plain text — paste cleanly into any app.",
+    f6Title: "Menu bar only",
+    f6Body: "No Dock icon, no windows, no clutter. Runs quietly in the background.",
+    privTitle: "Privacy first",
+    privBody: "TextSnap processes screenshots and recognized text locally on your Mac. It does not upload, store, or transmit captured images or OCR results.",
+    priv1: "No network requests — ever",
+    priv2: "No account or sign-in required",
+    priv3: "Screenshots are never written to disk",
+    priv4: "No analytics or telemetry",
+    priv5: "100% open source — audit the code",
+    footGithub: "GitHub",
+    footReleases: "Releases",
+    footIssues: "Issues",
+    footLicense: "License",
+    footCopy: "© 2026 Kohei Ishikawa · MIT License · Made for macOS",
+  },
+  ja: {
+    langToggle: "English",
+    heroSub: "ショートカット一発で画面上の任意の範囲をOCR。ローカル処理だからインターネット不要。",
+    btnDownload: "⬇ Mac用ダウンロード（無料）",
+    btnGithub: "GitHubで見る →",
+    heroMeta: "無料 · オープンソース · macOS 14.0以降 · Apple Silicon & Intel対応",
+    stepsLabel: "使い方",
+    stepsTitle: "3ステップで文字をコピー",
+    stepsSub: "設定不要。ショートカットを押して範囲を選ぶだけ。",
+    step1Title: "ショートカットを押す",
+    step1Body: "どのアプリからでも <kbd>⌘⇧2</kbd> を押してキャプチャモードを起動。",
+    step2Title: "範囲を選択する",
+    step2Body: "画面上の文字の上にマウスでドラッグして矩形を選択。",
+    step3Title: "どこにでもペースト",
+    step3Body: "文字が認識されてクリップボードにコピー。<kbd>⌘V</kbd> で貼り付け。",
+    featLabel: "機能",
+    featTitle: "必要なものだけを、シンプルに",
+    f1Title: "ローカルOCR",
+    f1Body: "Apple Vision Frameworkを使用。スクリーンショットがMacの外に出ることはありません。",
+    f2Title: "日本語・英語対応",
+    f2Body: "日本語・英語それぞれ、または同じ画像内の混在テキストも認識できます。",
+    f3Title: "マルチディスプレイ",
+    f3Body: "異なるRetina倍率の複数モニター環境に対応しています。",
+    f4Title: "即時キャプチャ",
+    f4Body: "ストリーミングなし、遅延なし。スクリーンショット1枚を撮影し、認識後は破棄します。",
+    f5Title: "プレーンテキスト出力",
+    f5Body: "結果は常にプレーンテキスト。あらゆるアプリにきれいに貼り付けられます。",
+    f6Title: "メニューバーのみ常駐",
+    f6Body: "Dockアイコンなし、ウィンドウなし。バックグラウンドで静かに動作します。",
+    privTitle: "プライバシー優先",
+    privBody: "TextSnapはスクリーンショットと認識結果をMac上のみで処理します。キャプチャ画像やOCR結果を外部にアップロード・保存・送信することはありません。",
+    priv1: "ネット通信は一切行いません",
+    priv2: "アカウント登録不要",
+    priv3: "スクリーンショットはディスクに保存されません",
+    priv4: "分析・テレメトリーなし",
+    priv5: "100%オープンソース — コードを確認できます",
+    footGithub: "GitHub",
+    footReleases: "リリース",
+    footIssues: "Issues",
+    footLicense: "ライセンス",
+    footCopy: "© 2026 Kohei Ishikawa · MITライセンス · macOS専用",
+  }
+};
+
+let currentLang = 'en';
+
+function applyLang(lang) {
+  const t = T[lang];
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.getElementById('lang-toggle').textContent = t.langToggle;
+
+  document.getElementById('hero-sub').textContent = t.heroSub;
+  document.getElementById('btn-download').textContent = t.btnDownload;
+  document.getElementById('btn-github').textContent = t.btnGithub;
+  document.getElementById('hero-meta').textContent = t.heroMeta;
+
+  document.getElementById('steps-label').textContent = t.stepsLabel;
+  document.getElementById('steps-title').textContent = t.stepsTitle;
+  document.getElementById('steps-sub').textContent = t.stepsSub;
+  document.getElementById('step1-title').textContent = t.step1Title;
+  document.getElementById('step1-body').innerHTML = t.step1Body;
+  document.getElementById('step2-title').textContent = t.step2Title;
+  document.getElementById('step2-body').textContent = t.step2Body;
+  document.getElementById('step3-title').textContent = t.step3Title;
+  document.getElementById('step3-body').innerHTML = t.step3Body;
+
+  document.getElementById('feat-label').textContent = t.featLabel;
+  document.getElementById('feat-title').textContent = t.featTitle;
+  document.getElementById('f1-title').textContent = t.f1Title;
+  document.getElementById('f1-body').textContent = t.f1Body;
+  document.getElementById('f2-title').textContent = t.f2Title;
+  document.getElementById('f2-body').textContent = t.f2Body;
+  document.getElementById('f3-title').textContent = t.f3Title;
+  document.getElementById('f3-body').textContent = t.f3Body;
+  document.getElementById('f4-title').textContent = t.f4Title;
+  document.getElementById('f4-body').textContent = t.f4Body;
+  document.getElementById('f5-title').textContent = t.f5Title;
+  document.getElementById('f5-body').textContent = t.f5Body;
+  document.getElementById('f6-title').textContent = t.f6Title;
+  document.getElementById('f6-body').textContent = t.f6Body;
+
+  document.getElementById('priv-title').textContent = t.privTitle;
+  document.getElementById('priv-body').textContent = t.privBody;
+  document.getElementById('priv1').textContent = t.priv1;
+  document.getElementById('priv2').textContent = t.priv2;
+  document.getElementById('priv3').textContent = t.priv3;
+  document.getElementById('priv4').textContent = t.priv4;
+  document.getElementById('priv5').textContent = t.priv5;
+
+  document.getElementById('foot-github').textContent = t.footGithub;
+  document.getElementById('foot-releases').textContent = t.footReleases;
+  document.getElementById('foot-issues').textContent = t.footIssues;
+  document.getElementById('foot-license').textContent = t.footLicense;
+  document.getElementById('foot-copy').textContent = t.footCopy;
+
+  localStorage.setItem('textsnap-lang', lang);
+}
+
+function toggleLang() {
+  applyLang(currentLang === 'en' ? 'ja' : 'en');
+}
+
+// Detect language on load: saved preference → browser language → English fallback
+(function() {
+  const saved = localStorage.getItem('textsnap-lang');
+  if (saved === 'ja' || saved === 'en') { applyLang(saved); return; }
+  const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  applyLang(browserLang.startsWith('ja') ? 'ja' : 'en');
+})();
+</script>
 </body>
 </html>
