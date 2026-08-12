@@ -1,10 +1,10 @@
 # TextSnap
 
+**[Distribution site](https://isitest1.github.io/TextSnap/) · [Download DMG](https://github.com/isitest1/TextSnap/releases/latest/download/TextSnap.dmg) · [Releases](https://github.com/isitest1/TextSnap/releases)**
+
 A lightweight macOS menu bar app that captures text from any area of your screen using local OCR — no internet required.
 
 Inspired by Windows PowerToys Text Extractor.
-
-![TextSnap workflow: press shortcut, select region, text copies to clipboard](docs/assets/workflow.png)
 
 ## Features
 
@@ -29,7 +29,7 @@ No account. No analytics. No network requests.
 
 ## Installation
 
-1. Download `TextSnap.dmg` from the [latest release](https://github.com/isitest1/TextSnap/releases/latest)
+1. Download [`TextSnap.dmg`](https://github.com/isitest1/TextSnap/releases/latest/download/TextSnap.dmg) from the latest release
 2. Open the DMG and drag **TextSnap** to your Applications folder
 3. Launch TextSnap from Applications
 4. Grant **Screen Recording** permission when prompted
@@ -71,7 +71,7 @@ Open the TextSnap menu bar icon and choose **Recognition Language**:
 
 ## Build from Source
 
-**Requirements:** Xcode 16 or later, macOS 14 SDK
+**Requirements:** Xcode 26 or later, macOS 14 SDK
 
 ```bash
 git clone https://github.com/isitest1/TextSnap.git
