@@ -15,26 +15,51 @@ final class CaptureCoordinator {
 
     func startCapture() {
         guard state == .idle else { return }
-
-        Task {
-            let hasPermission = await PermissionService.checkScreenRecordingPermission()
-            guard hasPermission else {
-                showPermissionAlert()
-                return
-            }
-            state = .selecting
-            overlayController.show()
+        guard PermissionService.checkScreenRecordingPermission() else {
+            showPermissionAlert()
+            return
         }
+        state = .selecting
+        overlayController.show()
     }
 
     private func showPermissionAlert() {
         let alert = NSAlert()
         alert.messageText = "Screen Recording Permission Required"
-        alert.informativeText = "TextSnap needs Screen Recording access to capture the selected area.\n\nPlease grant access in System Settings > Privacy & Security > Screen Recording, then restart TextSnap."
+        alert.informativeText = "TextSnap needs Screen Recording access.\n\nIf the system dialog appeared, click Allow there.\nIf not, open System Settings → Privacy & Security → Screen Recording and enable TextSnap.\n\nThen click \"Quit & Relaunch\" to apply the change."
+        alert.addButton(withTitle: "Quit & Relaunch")
         alert.addButton(withTitle: "Open System Settings")
         alert.addButton(withTitle: "Cancel")
-        if alert.runModal() == .alertFirstButtonReturn {
+        switch alert.runModal() {
+        case .alertFirstButtonReturn:
+            relaunchApp()
+        case .alertSecondButtonReturn:
             PermissionService.openSystemSettings()
+        default:
+            break
+        }
+    }
+
+    private func isScreenCapturePermissionError(_ error: Error) -> Bool {
+        // SCStreamError domain error codes for permission issues.
+        // Code -3801 (userDeclined) and -100 appear when ScreenCaptureKit
+        // cannot access screen content due to missing permission.
+        let nsError = error as NSError
+        let scDomain = "com.apple.ScreenCaptureKit.SCStreamErrorDomain"
+        if nsError.domain == scDomain {
+            return nsError.code == -3801 || nsError.code == -100
+        }
+        return false
+    }
+
+    private func relaunchApp() {
+        let path = Bundle.main.bundlePath
+        let task = Process()
+        task.launchPath = "/usr/bin/open"
+        task.arguments = [path]
+        try? task.run()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NSApp.terminate(nil)
         }
     }
 
@@ -84,7 +109,14 @@ extension CaptureCoordinator: SelectionDelegate {
                     playSuccessSound()
                 }
             } catch {
-                showErrorAlert(error)
+                // ScreenCaptureKit returns an error when permission was granted
+                // in TCC but the app has not yet been restarted. Reuse the
+                // permission alert so the user can quit and relaunch.
+                if isScreenCapturePermissionError(error) {
+                    showPermissionAlert()
+                } else {
+                    showErrorAlert(error)
+                }
             }
 
             state = .idle

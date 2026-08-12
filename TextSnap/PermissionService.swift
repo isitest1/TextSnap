@@ -1,14 +1,14 @@
-import ScreenCaptureKit
+import CoreGraphics
 import AppKit
 
 struct PermissionService {
-    static func checkScreenRecordingPermission() async -> Bool {
-        do {
-            _ = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-            return true
-        } catch {
-            return false
-        }
+    // CGRequestScreenCaptureAccess registers this app in TCC and triggers the
+    // system permission dialog on first call. Returns true immediately if the
+    // app already has permission; returns false and shows the dialog otherwise.
+    // Unlike CGPreflightScreenCaptureAccess, this actually makes the app appear
+    // in System Settings → Privacy & Security → Screen Recording.
+    static func checkScreenRecordingPermission() -> Bool {
+        CGRequestScreenCaptureAccess()
     }
 
     static func openSystemSettings() {
