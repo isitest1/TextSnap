@@ -5,6 +5,13 @@ All notable changes to TextSnap will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-08-12
+
+### Fixed
+- Screen Recording permission was not detected correctly after granting access in System Settings. The app now uses `CGRequestScreenCaptureAccess()` which registers the app in TCC and triggers the system permission dialog on first use.
+- Added "Quit & Relaunch" button to the permission alert so users can apply the granted permission without manually restarting the app.
+- Permission error from ScreenCaptureKit during capture now shows the permission alert with a relaunch option instead of a generic error.
+
 ## [1.0.0] - 2026-08-12
 
 ### Added
