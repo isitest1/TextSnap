@@ -14,3 +14,5 @@ xcuserdata/
 *.provisionprofile
 .env
 .env.*
+TextSnap-*.dmg
+TextSnap-*.zip
