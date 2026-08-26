@@ -270,6 +270,7 @@
 <!-- Footer -->
 <footer>
   <div class="links">
+    <a href="https://isitest1.github.io/portfolio-hub/" id="foot-portfolio"></a>
     <a href="https://github.com/isitest1/TextSnap" id="foot-github"></a>
     <a href="https://github.com/isitest1/TextSnap/releases" id="foot-releases"></a>
     <a href="https://github.com/isitest1/TextSnap/issues" id="foot-issues"></a>
@@ -320,6 +321,7 @@ const T = {
     ossTitle: "Open Source",
     ossBody: "TextSnap is free and open source under the MIT License. Read the code, report issues, or contribute on GitHub.",
     btnOss: "View on GitHub →",
+    footPortfolio: "Kohei Ishikawa — Portfolio Hub",
     footGithub: "GitHub",
     footReleases: "Releases",
     footIssues: "Issues",
@@ -366,6 +368,7 @@ const T = {
     ossTitle: "オープンソース",
     ossBody: "TextSnapはMITライセンスのもと無料・オープンソースで公開されています。コードの閲覧、Issue報告、コントリビューションはGitHubで。",
     btnOss: "GitHubで見る →",
+    footPortfolio: "Kohei Ishikawa のポートフォリオ",
     footGithub: "GitHub",
     footReleases: "リリース",
     footIssues: "Issues",
@@ -419,6 +422,7 @@ function applyLang(lang) {
   document.getElementById('oss-title').textContent = t.ossTitle;
   document.getElementById('oss-body').textContent = t.ossBody;
   document.getElementById('btn-oss').textContent = t.btnOss;
+  document.getElementById('foot-portfolio').textContent = t.footPortfolio;
   document.getElementById('foot-github').textContent = t.footGithub;
   document.getElementById('foot-releases').textContent = t.footReleases;
   document.getElementById('foot-issues').textContent = t.footIssues;
