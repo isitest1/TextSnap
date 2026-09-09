@@ -116,4 +116,4 @@ Go to System Settings → Privacy & Security → Screen Recording, add TextSnap 
 
 ## License
 
-[MIT License](LICENSE) — Copyright © 2026 Kohei Ishikawa
+[MIT License](LICENSE) — Copyright © 2026 Margherita Works by Kohei Ishikawa
